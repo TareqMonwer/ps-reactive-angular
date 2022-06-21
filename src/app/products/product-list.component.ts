@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { catchError, EMPTY, map, Subject, combineLatest } from 'rxjs';
+import { catchError, EMPTY, map, Subject, combineLatest, startWith } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 
@@ -20,6 +20,9 @@ export class ProductListComponent  {
   products$ = combineLatest([
     this.productService.products$,
     this.categorySelectAction$
+      .pipe(
+        startWith(0)
+      )
   ]).pipe(
     map(([products, categoryId]) =>
         products.filter(product =>
