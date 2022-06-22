@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { catchError, combineLatest, map, Observable, tap, throwError, Subject, BehaviorSubject } from 'rxjs';
+import { catchError, combineLatest, map, Observable, tap, throwError, Subject, BehaviorSubject, merge, scan } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -10,10 +10,12 @@ import { ProductCategoryService } from '../product-categories/product-category.s
   providedIn: 'root'
 })
 export class ProductService {
-  private productsUrl = 'api/product';   
+  private productsUrl = 'api/products';   
   private suppliersUrl = 'api/suppliers';
   private productSelectSubject = new BehaviorSubject<number>(1);
   productSelectAction$ = this.productSelectSubject.asObservable();
+  private addProductSubject = new Subject<Product>();
+  addProductAction$ = this.addProductSubject.asObservable();
 
   products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
@@ -34,6 +36,14 @@ export class ProductService {
       } as Product))
     })
   )
+
+  productsWithAddProducts$ = merge(
+    this.productsWithCategory$,
+    this.addProductAction$
+  ).pipe(
+    scan((acc, value) => 
+    (value instanceof Array) ? [...value]:[...acc, value], [] as Product[])
+  )
   
   selectedProduct$ = combineLatest([
     this.productsWithCategory$,
@@ -51,6 +61,12 @@ export class ProductService {
   selectedProductIdChanged(productId: number) {
     this.productSelectSubject.next(productId);
   }
+
+  addNewProduct(product?: Product) {
+    this.addProductSubject.next(
+      product ? product : this.fakeProduct()
+    )
+  }
   
   private fakeProduct(): Product {
     return {
@@ -60,7 +76,7 @@ export class ProductService {
       description: 'Our new product',
       price: 8.9,
       categoryId: 3,
-      // category: 'Toolbox',
+      category: 'Toolbox',
       quantityInStock: 30
     };
   }
