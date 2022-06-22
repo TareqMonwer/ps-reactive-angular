@@ -13,7 +13,7 @@ export class ProductListAltComponent {
   errorMessage = '';
   selectedProductId = 0;
 
-  products$ = this.productService.products$
+  products$ = this.productService.productsWithCategory$
     .pipe(
       catchError(err => {
         this.errorMessage = err;
@@ -24,6 +24,6 @@ export class ProductListAltComponent {
   constructor(private productService: ProductService) { }
 
   onSelected(productId: number): void {
-    console.log('Not yet implemented');
+    console.log(productId, 'Not yet implemented');
   }
 }
