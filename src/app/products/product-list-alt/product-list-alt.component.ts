@@ -11,7 +11,7 @@ import { ProductService } from '../product.service';
 export class ProductListAltComponent {
   pageTitle = 'Products';
   errorMessage = '';
-  selectedProductId = 0;
+  selectedProduct$ = this.productService.selectedProduct$;
 
   products$ = this.productService.productsWithCategory$
     .pipe(
@@ -24,6 +24,6 @@ export class ProductListAltComponent {
   constructor(private productService: ProductService) { }
 
   onSelected(productId: number): void {
-    console.log(productId, 'Not yet implemented');
+    this.productService.selectedProductIdChanged(productId);
   }
 }

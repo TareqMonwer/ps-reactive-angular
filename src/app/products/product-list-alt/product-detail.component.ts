@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { catchError, EMPTY } from 'rxjs';
 import { Supplier } from 'src/app/suppliers/supplier';
-import { Product } from '../product';
 
 import { ProductService } from '../product.service';
 
